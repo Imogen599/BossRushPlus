@@ -3,6 +3,7 @@ using CalamityMod.Systems;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
@@ -113,10 +114,14 @@ namespace BossRushPlus
 
 				BRBoss nameless = new(noxusMod.Find<ModNPC>("NamelessDeityBoss").Type, spawnContext: _ =>
 				{
-					// Set him to be downed allowing for the skip. If you dont skip it, he kicks you out and you dont get the rock but consider that a final challenge or smth lol.
-					var saveSystem = noxusMod.Find<ModSystem>("WorldSaveSystem");
-					var propertyInfo = saveSystem.GetType().GetProperty("HasDefeatedNamelessDeity", Flags);
-					propertyInfo.SetValue(null, true);
+					if (noxusMod.Version < new Version(1, 1, 17))
+					{
+						var saveSystem = noxusMod.Find<ModSystem>("WorldSaveSystem");
+						var propertyInfo = saveSystem.GetType().GetProperty("HasDefeatedNamelessDeity", Flags);
+						propertyInfo.SetValue(null, true);
+					}
+					else
+						noxusMod.Call("MakeNextNamelessDeathAnimationNotHappen");
 					NPC.SpawnOnPlayer(BossRushEvent.ClosestPlayerToWorldCenter, noxusMod.Find<ModNPC>("NamelessDeityBoss").Type);
 				});
 				bossesInfo.Add(new(nameless, endCount));
