@@ -1,3 +1,4 @@
 displayName = Boss Rush Plus
 author = Toasty
 version = 0.1
+modReferences = CalamityMod
